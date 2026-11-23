@@ -1,0 +1,47 @@
+{
+ "ciudad": "talara",
+ "nombre": "Talara",
+ "subtitulo": "Talara y Pariñas",
+ "W": 600,
+ "H": 533,
+ "celda": 15.0,
+ "epsg": 32717,
+ "x0": 465540.0,
+ "y0": 9489750.0,
+ "bbox": [
+  -81.31068291314143,
+  -4.6162545042639715,
+  -81.22951857962778,
+  -4.54389604073572
+ ],
+ "dtm": {
+  "off": 22.0,
+  "step": 0.01
+ },
+ "zmin": -16.757070541381836,
+ "zmax": 91.93255615234375,
+ "textura": {
+  "w": 900,
+  "h": 799
+ },
+ "agua_pct": 30.69,
+ "n_edificios": 14865,
+ "km_calles": 305.1,
+ "vistas": [
+  {
+   "nombre": "Centro",
+   "x": 4289.0,
+   "y": 4337.5,
+   "dist": 1300
+  }
+ ],
+ "rio_entrada": null,
+ "fuente_relieve": "GEM-15 v1 (COG público)",
+ "sentinel2": [
+  "S2C_17MMR_20260821_0_L2A",
+  "S2A_17MMQ_20251216_0_L2A"
+ ],
+ "overture": "2026-11-18.0",
+ "creditos": "Relieve: GEM-15, Google (CC-BY 4.0) y Copernicus GLO-30. Imagen: Copernicus Sentinel-2. Edificios y calles: Overture Maps (Google, Microsoft, OSM).",
+ "generado": "2026-11-19"
+}

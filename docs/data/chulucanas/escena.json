@@ -1,0 +1,46 @@
+{
+ "ciudad": "chulucanas",
+ "nombre": "Chulucanas",
+ "subtitulo": "Chulucanas (Morropón)",
+ "W": 467,
+ "H": 400,
+ "celda": 15.0,
+ "epsg": 32717,
+ "x0": 589380.0,
+ "y0": 9433995.0,
+ "bbox": [
+  -80.19366201602344,
+  -5.120180249984912,
+  -80.13039851140441,
+  -5.065824241393035
+ ],
+ "dtm": {
+  "off": -70.0,
+  "step": 0.01
+ },
+ "zmin": 75.43086242675781,
+ "zmax": 169.7296905517578,
+ "textura": {
+  "w": 700,
+  "h": 600
+ },
+ "agua_pct": 0.22,
+ "n_edificios": 13469,
+ "km_calles": 147.9,
+ "vistas": [
+  {
+   "nombre": "Centro",
+   "x": 3506.0,
+   "y": 3000.3,
+   "dist": 1200
+  }
+ ],
+ "rio_entrada": null,
+ "fuente_relieve": "GEM-15 v1 (COG público)",
+ "sentinel2": [
+  "S2A_17MNQ_20240907_0_L2A"
+ ],
+ "overture": "2026-11-18.0",
+ "creditos": "Relieve: GEM-15, Google (CC-BY 4.0) y Copernicus GLO-30. Imagen: Copernicus Sentinel-2. Edificios y calles: Overture Maps (Google, Microsoft, OSM).",
+ "generado": "2026-11-19"
+}

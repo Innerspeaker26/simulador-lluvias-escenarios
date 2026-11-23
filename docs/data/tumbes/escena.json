@@ -1,0 +1,52 @@
+{
+ "ciudad": "tumbes",
+ "nombre": "Tumbes",
+ "subtitulo": "Tumbes y Corrales",
+ "W": 700,
+ "H": 600,
+ "celda": 15.0,
+ "epsg": 32717,
+ "x0": 555270.0,
+ "y0": 9601095.0,
+ "bbox": [
+  -80.50237222730165,
+  -3.6088340860495194,
+  -80.40778566048867,
+  -3.5273589398411356
+ ],
+ "dtm": {
+  "off": 6.0,
+  "step": 0.01
+ },
+ "zmin": -0.8844921588897705,
+ "zmax": 90.3990249633789,
+ "textura": {
+  "w": 1050,
+  "h": 900
+ },
+ "agua_pct": 2.4,
+ "n_edificios": 30532,
+ "vistas": [
+  {
+   "nombre": "Centro",
+   "x": 5592.3,
+   "y": 4621.1,
+   "dist": 1300
+  },
+  {
+   "nombre": "Río Tumbes",
+   "x": 4704.2,
+   "y": 5395.4,
+   "dist": 2000
+  }
+ ],
+ "rio_entrada": null,
+ "fuente_relieve": "GEM-15 v1 (COG público)",
+ "sentinel2": [
+  "S2A_17MNS_20260624_1_L2A"
+ ],
+ "overture": "2026-11-18.0",
+ "creditos": "Relieve: GEM-15, Google (CC-BY 4.0) y Copernicus GLO-30. Imagen: Copernicus Sentinel-2. Edificios y calles: Overture Maps (Google, Microsoft, OSM).",
+ "generado": "2026-11-18",
+ "km_calles": 444.3
+}

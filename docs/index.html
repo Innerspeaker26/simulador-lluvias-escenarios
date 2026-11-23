@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escenarios de lluvia 3D – Costa norte del Perú</title>
+<meta name="description" content="Simulador 3D de inundaciones urbanas en la costa norte del Perú con tormentas de diseño (curvas IDF de SENAMHI) y eventos históricos (PISCOp).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/estilo.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
+  "troika-three-text": "https://cdn.jsdelivr.net/npm/troika-three-text@0.52.4/+esm",
+  "https://cdn.jsdelivr.net/npm/three@0.175.0/+esm": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+} }
+</script>
+</head>
+<body>
+<canvas id="c" aria-label="Escena 3D de la ciudad con simulación de lluvia e inundación"></canvas>
+
+<div id="cargando" class="card" role="status"><div class="spin"></div><span id="cargaTxt">Cargando escena…</span></div>
+
+<header id="title" class="card">
+  <div class="row">
+    <h1 id="tCiudad">Simulador de lluvias 3D</h1>
+    <select id="sCiudad" aria-label="Ciudad"></select>
+  </div>
+  <p id="tSub">Costa norte del Perú</p>
+  <p class="small"><span id="nb">0</span> edificaciones sobre el terreno GEM-15 de 15 m (<span id="zr"></span>).
+  La lluvia escurre por la pendiente, rodea las viviendas y se acumula en las zonas bajas.</p>
+</header>
+
+<div id="derecha">
+<div id="hud" class="card" aria-live="off">
+  <div class="fase"><span id="hFase" class="pill">Lloviendo</span></div>
+  <div class="kv"><span>Tiempo simulado</span><b id="hT">0:00 h</b></div>
+  <div class="kv"><span>Lluvia acumulada</span><b id="hP">0 mm</b></div>
+  <div class="kv"><span>Agua en superficie</span><b id="hV">0 m³</b></div>
+  <div class="kv"><span>Área con &gt; 10 cm</span><b id="hA10">0 ha</b></div>
+  <div class="kv"><span>Área con &gt; 50 cm</span><b id="hA50">0 ha</b></div>
+  <div class="kv"><span>Tirante máximo</span><b id="hMax">0.00 m</b></div>
+  <div class="kv kc" hidden><span>Calles con &gt; 10 cm</span><b id="hC10">0 km</b></div>
+  <div class="kv kc" hidden><span>Calles con &gt; 30 cm</span><b id="hC30">0 km</b></div>
+  <div class="kv"><span>Lluvia ahora</span><b id="hR">0 mm/h</b></div>
+  <div class="kv muted"><span>Cuadros por segundo</span><b id="fps">0</b></div>
+</div>
+<section id="cPines" class="card" aria-label="Pines y coordenadas">
+  <div class="head"><h2>📍 Pines y coordenadas <span id="nPines"></span></h2>
+    <button id="tPines" aria-expanded="true" title="Mostrar u ocultar">Ocultar</button></div>
+  <div class="body">
+      <form id="fIr" class="ir" autocomplete="off">
+        <input id="tIr" list="dlCalles" placeholder="-5.1945, -80.6328 · 540694 9425824 · Av. Grau" aria-label="Ir a coordenadas o calle">
+        <button class="btn" type="submit">Ir</button>
+        <datalist id="dlCalles"></datalist>
+      </form>
+      <p class="nota" id="nIr">Latitud y longitud, UTM 17S (Este Norte) o el nombre de una calle. Se fija un pin en el lugar.</p>
+      <div id="pines"></div>
+      <div class="views exp">
+        <button class="btn" id="bPinCSV" title="Pines con coordenadas, cota y tirante">CSV</button>
+        <button class="btn" id="bPinGJ" title="Pines como puntos para ArcGIS o QGIS">GeoJSON</button>
+        <button class="btn" id="bPinSerie" title="Tirante en el tiempo de cada pin">Serie (CSV)</button>
+        <button class="btn" id="bPinLink" title="Copia un enlace que abre esta ciudad con los pines">Copiar enlace</button>
+      </div>
+  </div>
+</section>
+</div>
+
+<section id="panel" class="card" aria-label="Controles">
+  <div class="head">
+    <button id="bPause" class="btn primary" aria-pressed="false">Pausar</button>
+    <button id="bReset" class="btn" title="Seca la ciudad y reinicia la tormenta">Reiniciar</button>
+    <button id="tPanel" aria-expanded="true" title="Mostrar u ocultar controles">Controles</button>
+  </div>
+  <div class="body">
+    <div class="sec first">
+      <h2>Tormenta</h2>
+      <div class="seg tres" id="segTipo" role="radiogroup" aria-label="Tipo de escenario">
+        <button class="btn on" data-tipo="diseno" role="radio" aria-checked="true" title="Tormenta de diseño según las curvas IDF de SENAMHI">Diseño</button>
+        <button class="btn" data-tipo="historico" role="radio" aria-checked="false" title="Lluvia real registrada por PISCOp (SENAMHI)">Histórico</button>
+        <button class="btn" data-tipo="libre" role="radio" aria-checked="false" title="Intensidad y duración a elección">Libre</button>
+      </div>
+      <div id="pDiseno">
+        <div class="ctl sel"><label for="sT">Periodo de retorno</label>
+          <select id="sT"><option value="2">2 años</option><option value="5">5 años</option><option value="10" selected>10 años</option><option value="30">30 años</option><option value="50">50 años</option><option value="100">100 años</option></select></div>
+        <div class="ctl sel"><label for="sD">Duración</label>
+          <select id="sD"><option value="1">1 hora</option><option value="2">2 horas</option><option value="3" selected>3 horas</option><option value="6">6 horas</option><option value="12">12 horas</option><option value="24">24 horas</option></select></div>
+        <div class="ctl sel"><label for="sClima">Clima</label>
+          <select id="sClima"><option value="actual" selected>Actual</option><option value="2050">Proyección al 2050</option></select></div>
+        <div class="ctl sel"><label for="sBanda">Estimación</label>
+          <select id="sBanda"><option value="inferior">Baja</option><option value="medio" selected>Central</option><option value="superior">Alta</option></select></div>
+        <label class="chk" title="La IDF es un valor puntual; sobre toda la ciudad la lluvia media es menor"><input type="checkbox" id="cArf" checked> Reducir por el área de la ciudad</label>
+      </div>
+      <div id="pHistorico" hidden>
+        <div class="ctl sel"><label for="sEvento">Evento</label><select id="sEvento"></select></div>
+      </div>
+      <div id="pLibre" hidden>
+        <div class="ctl"><label for="rI">Intensidad</label><output id="oI"></output><input id="rI" type="range" min="2" max="120" step="1" value="30"></div>
+        <div class="ctl"><label for="rDur">Duración</label><output id="oDur"></output><input id="rDur" type="range" min="0.5" max="12" step="0.5" value="3"></div>
+      </div>
+      <div class="hieto" aria-label="Hietograma: intensidad de la lluvia en el tiempo">
+        <div class="hieto-t" id="tEsc">—</div>
+        <svg id="gHieto" role="img" aria-label="Hietograma de la tormenta"></svg>
+        <p class="nota" id="nEsc"></p>
+      </div>
+      <div class="ctl"><label for="rLoss">Infiltración y drenaje</label><output id="oLoss"></output><input id="rLoss" type="range" min="0" max="30" step="1" value="4"></div>
+      <div class="ctl" id="ctlRio"><label for="rRio">Caudal de entrada del río</label><output id="oRio"></output><input id="rRio" type="range" min="0" max="3500" step="50" value="0"></div>
+      <label class="chk"><input type="checkbox" id="cLluvia3d" checked> Ver lluvia cayendo</label>
+    </div>
+    <div class="sec">
+      <h2>Simulación</h2>
+      <div class="ctl"><label for="rVel">Velocidad</label><output id="oVel"></output><input id="rVel" type="range" min="1" max="80" step="1" value="12"></div>
+      <div class="ctl"><label for="rN">Rugosidad (Manning n)</label><output id="oN"></output><input id="rN" type="range" min="0.015" max="0.1" step="0.005" value="0.035"></div>
+      <label class="chk"><input type="checkbox" id="cObs" checked> Las viviendas desvían el agua</label>
+    </div>
+    <div class="sec">
+      <h2>Agua</h2>
+      <label class="chk"><input type="checkbox" id="cWater" checked> Mostrar inundación</label>
+      <div class="seg" role="radiogroup" aria-label="Mapa de agua">
+        <button class="btn on" data-mapa="0" role="radio" aria-checked="true">Tirante actual</button>
+        <button class="btn" data-mapa="1" role="radio" aria-checked="false">Tirante máximo</button>
+      </div>
+      <label class="chk"><input type="checkbox" id="cTraz" checked> Trazas de escorrentía</label>
+      <div class="ctl"><label for="rDens">Densidad de trazas</label><output id="oDens"></output><input id="rDens" type="range" min="10000" max="260000" step="10000" value="60000"></div>
+      <div class="ctl"><label for="rTrail">Duración de la estela</label><output id="oTrail"></output><input id="rTrail" type="range" min="0.2" max="2.5" step="0.1" value="0.8"></div>
+    </div>
+    <div class="sec">
+      <h2>Relieve y viviendas</h2>
+      <div class="ctl"><label for="rExag">Exageración vertical</label><output id="oExag"></output><input id="rExag" type="range" min="1" max="8" step="0.5" value="3"></div>
+      <div class="ctl"><label for="rBld">Altura de edificaciones</label><output id="oBld"></output><input id="rBld" type="range" min="0" max="3" step="0.1" value="1"></div>
+      <label class="chk"><input type="checkbox" id="cBld" checked> Mostrar viviendas</label>
+    </div>
+    <div class="sec" id="secCalles" hidden>
+      <h2>Calles</h2>
+      <label class="chk"><input type="checkbox" id="cCalles" checked> Mostrar calles</label>
+      <label class="chk"><input type="checkbox" id="cNombres" checked> Nombres de calles</label>
+      <p class="nota" id="nCalles"></p>
+      <button id="bAfect" class="btn wide" title="Calles con más longitud bajo más de 30 cm de agua (tirante máximo)">Calles más afectadas</button>
+      <ol id="lAfect" class="afect"></ol>
+    </div>
+    <div class="sec">
+      <h2>Vistas</h2>
+      <div class="views" id="views"></div>
+    </div>
+    <div class="sec">
+      <h2>Exportar</h2>
+      <button id="bExp" class="btn wide" title="Cuadrícula ASCII + .prj (UTM 17S) para ArcGIS o QGIS">Tirante máximo para ArcGIS (.asc)</button>
+    </div>
+  </div>
+</section>
+
+<div id="sonda" class="card" hidden></div>
+<div id="etiqueta" hidden></div>
+
+<div id="esquina">
+<div id="leyenda" class="card" aria-label="Leyenda de tirante">
+  <div class="lt">Tirante de agua</div>
+  <div class="ramp"></div>
+  <div class="ticks"><span>5 cm</span><span>0.3</span><span>1</span><span>≥ 2 m</span></div>
+</div>
+</div>
+<div id="hint" class="card">Arrastra para rotar, rueda para acercar, clic derecho para desplazar. Clic en el terreno para consultar el tirante y fijar pines.<br>
+<span id="cred"></span></div>
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

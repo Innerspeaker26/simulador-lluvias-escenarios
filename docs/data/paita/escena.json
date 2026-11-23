@@ -1,0 +1,46 @@
+{
+ "ciudad": "paita",
+ "nombre": "Paita",
+ "subtitulo": "Paita y su bahía",
+ "W": 533,
+ "H": 467,
+ "celda": 15.0,
+ "epsg": 32717,
+ "x0": 483810.0,
+ "y0": 9434430.0,
+ "bbox": [
+  -81.14607350750278,
+  -5.116748563163174,
+  -81.07393183100308,
+  -5.05336495273045
+ ],
+ "dtm": {
+  "off": 6.0,
+  "step": 0.01
+ },
+ "zmin": -0.9400358200073242,
+ "zmax": 78.79452514648438,
+ "textura": {
+  "w": 799,
+  "h": 700
+ },
+ "agua_pct": 38.35,
+ "n_edificios": 28323,
+ "km_calles": 418.2,
+ "vistas": [
+  {
+   "nombre": "Centro",
+   "x": 3554.3,
+   "y": 3066.7,
+   "dist": 1200
+  }
+ ],
+ "rio_entrada": null,
+ "fuente_relieve": "GEM-15 v1 (COG público)",
+ "sentinel2": [
+  "S2A_17MMQ_20251216_0_L2A"
+ ],
+ "overture": "2026-11-18.0",
+ "creditos": "Relieve: GEM-15, Google (CC-BY 4.0) y Copernicus GLO-30. Imagen: Copernicus Sentinel-2. Edificios y calles: Overture Maps (Google, Microsoft, OSM).",
+ "generado": "2026-11-19"
+}

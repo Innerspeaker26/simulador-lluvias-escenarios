@@ -1,0 +1,53 @@
+{
+ "ciudad": "sullana",
+ "nombre": "Sullana",
+ "subtitulo": "Sullana y Bellavista",
+ "W": 700,
+ "H": 600,
+ "celda": 15.0,
+ "epsg": 32717,
+ "x0": 529665.0,
+ "y0": 9453870.0,
+ "bbox": [
+  -80.73245381831153,
+  -4.940832650253005,
+  -80.6377124579923,
+  -4.859369462684756
+ ],
+ "dtm": {
+  "off": -18.0,
+  "step": 0.01
+ },
+ "zmin": 23.039554595947266,
+ "zmax": 106.80894470214844,
+ "textura": {
+  "w": 1050,
+  "h": 900
+ },
+ "agua_pct": 1.69,
+ "n_edificios": 57412,
+ "vistas": [
+  {
+   "nombre": "Centro",
+   "x": 5148.5,
+   "y": 4069.2,
+   "dist": 1300
+  },
+  {
+   "nombre": "Río Chira",
+   "x": 3596.9,
+   "y": 5617.5,
+   "dist": 2000
+  }
+ ],
+ "rio_entrada": null,
+ "fuente_relieve": "GEM-15 v1 (COG público)",
+ "sentinel2": [
+  "S2C_17MNQ_20250912_0_L2A",
+  "S2B_17MNQ_20251229_0_L2A"
+ ],
+ "overture": "2026-11-18.0",
+ "creditos": "Relieve: GEM-15, Google (CC-BY 4.0) y Copernicus GLO-30. Imagen: Copernicus Sentinel-2. Edificios y calles: Overture Maps (Google, Microsoft, OSM).",
+ "generado": "2026-11-18",
+ "km_calles": 794.2
+}
