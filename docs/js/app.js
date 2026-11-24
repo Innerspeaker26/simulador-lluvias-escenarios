@@ -148,7 +148,7 @@ async function main() {
 
   // Entrada del río: componente de "agua" (huecos de GEM-15) que cruza el dominio;
   // se inyecta el caudal en sus celdas de borde más altas (aguas arriba).
-  const rio = meta.rio_entrada ? celdasCauce(meta.rio_entrada, z, W, H, C) : detectarRio(agua, z, W, H);
+  const rio = meta.sin_rio ? [] : meta.rio_entrada ? celdasCauce(meta.rio_entrada, z, W, H, C) : ampliarCauce(detectarRio(agua, z, W, H), z, W, H, C);
   const aporte = new Float32Array(N), perm = new Float32Array(N);
   // Agua de GEM-15 a menos de 1,5 m s.n.m. = mar: actúa como sumidero (el agua sale del dominio)
   for (let i = 0; i < N; i++) perm[i] = agua[i] ? (z[i] < 1.5 ? -1 : 1) : 1 - 0.85 * cob[i] / 255;
@@ -660,6 +660,10 @@ async function main() {
     if (tStats > 0.3) {
       tStats = 0;
       S.est = hidro.estadisticas();
+      if (!isFinite(S.est.max) || !isFinite(S.est.volumen)) {     // inestabilidad numérica: se reinicia
+        console.warn('Simulación inestable: se reinicia el agua');
+        reiniciar(); S.est = hidro.estadisticas();
+      }
       const h = Math.floor(S.t / 3600), m = Math.floor((S.t % 3600) / 60);
       hud.T.textContent = `${h}:${String(m).padStart(2, '0')} h`;
       hud.P.textContent = `${fmt(ESC.acumulada(S.hieto, S.t))} mm`;
@@ -678,7 +682,7 @@ async function main() {
     }
     if (acum > 0.5) { hud.fps.textContent = Math.round(cuadros / acum); acum = 0; cuadros = 0; }
   }
-  window.__simulador = { S, hidro, meta, pines, calles, lluvia: LL, ESC };
+  window.__simulador = { S, hidro, meta, pines, calles, rio, lluvia: LL, ESC };
   elegirTipo(S.tipo);
   cuadro();
 }
@@ -691,9 +695,21 @@ function celdasCauce(p, z, W, H, C) {
   for (let r = Math.max(0, r0 - R); r <= Math.min(H - 1, r0 + R); r++)
     for (let c = Math.max(0, c0 - R); c <= Math.min(W - 1, c0 + R); c++)
       if (Math.hypot(r - r0, c - c0) <= R) cand.push(r * W + c);
-  const zmin = Math.min(...cand.map((i) => z[i]));
-  return cand.filter((i) => z[i] < zmin + 1.0);
+  // Las celdas más bajas (el cauce): al menos 24, para que el caudal no entre por un punto
+  // y el nivel suba más rápido de lo que el paso de tiempo puede seguir (cauces angostos).
+  const orden = cand.sort((a, b) => z[a] - z[b]);
+  const n = Math.max(24, orden.filter((i) => z[i] < z[orden[0]] + 1.0).length);
+  return orden.slice(0, n);
 }
+
+// Un cauce detectado automáticamente puede quedar en muy pocas celdas: se toman las 24+ más bajas
+// alrededor de su centro, igual que con un punto de entrada fijo.
+function ampliarCauce(celdas, z, W, H, C) {
+  if (!celdas.length || celdas.length >= 24) return celdas;
+  const r = d3mean(celdas.map((i) => (i / W) | 0)), c = d3mean(celdas.map((i) => i % W));
+  return celdasCauce({ x: (c + 0.5) * C, y: H * C - (r + 0.5) * C }, z, W, H, C);
+}
+const d3mean = (v) => v.reduce((a, b) => a + b, 0) / v.length;
 
 function detectarRio(agua0, z, W, H) {
   // El cauce viene como "sin dato" en GEM-15, pero con cortes: se dilata la máscara 3 celdas

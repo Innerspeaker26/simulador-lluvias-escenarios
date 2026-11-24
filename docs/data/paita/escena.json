@@ -42,5 +42,6 @@
  ],
  "overture": "2026-11-18.0",
  "creditos": "Relieve: GEM-15, Google (CC-BY 4.0) y Copernicus GLO-30. Imagen: Copernicus Sentinel-2. Edificios y calles: Overture Maps (Google, Microsoft, OSM).",
- "generado": "2026-11-19"
+ "generado": "2026-11-19",
+ "sin_rio": true
 }

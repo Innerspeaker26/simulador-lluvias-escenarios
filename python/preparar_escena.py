@@ -95,6 +95,7 @@ CIUDADES = {
         nombre="Paita", subtitulo="Paita y su bahía",
         centro=(-81.110, -5.085), ancho_km=8.0, alto_km=7.0,
         vistas=[("Centro", -81.114, -5.089, 1200)],
+        sin_rio=True,   # ciudad costera sin río: no se ofrece caudal de entrada
     ),
     "chulucanas": dict(
         nombre="Chulucanas", subtitulo="Chulucanas (Morropón)",
@@ -551,7 +552,7 @@ def main():
         "textura": {"w": tw, "h": th},
         "agua_pct": round(float(agua.mean() * 100), 2),
         "n_edificios": n_edif, "km_calles": km, "vistas": vistas,
-        "rio_entrada": _rio(cfg, rej),
+        "rio_entrada": _rio(cfg, rej), "sin_rio": bool(cfg.get("sin_rio")),
         "fuente_relieve": "GEM-15 v1 (" + ("Earth Engine" if a.fuente == "gee" else "COG público") + ")",
         "sentinel2": escenas, "overture": OVERTURE_RELEASE,
         "creditos": CREDITOS,
